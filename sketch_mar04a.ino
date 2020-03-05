@@ -5,7 +5,7 @@ static const uint8_t leds[FLOORS] = {4,5,6,7};
 typedef enum {
   UP = 0,
   DOWN,
-  STATIONARY
+  RETURN
 } elevator_dir;
 
 static elevator_dir direction;
@@ -23,7 +23,7 @@ void setup() {
 
   // In the beginning, the elevator is stationary and stays on the first floor
   digitalWrite(leds[0], HIGH);
-  direction = STATIONARY;
+  direction = RETURN;
 }
 
 void loop() {
@@ -33,20 +33,22 @@ void loop() {
   } else if (up_requests != 0 && down_requests == 0) {
     direction = UP;
   } else if (up_requests == 0 && down_requests == 0) {
-    direction = STATIONARY;
+    direction = RETURN;
   }
 
   // if no request is received and elevator already on the first floor, do nothing.
-  if (direction == STATIONARY && current_floor == 0) return;
+  if (direction == RETURN && current_floor == 0) return;
 
   // based on current floor and direction, determines if the elevator reaches a desired floor.
   // If yes, add 5s to the delay to simulate people going in and out of the elevator
   if (floor_requested[current_floor] == true) {
     floor_requested[current_floor] = false;
+    if (direction == DOWN) --down_requests;
+    else if (direction == UP) --up_requests;
     delay(5000);
   }
   delay(1500); // simulated 1.5s delay for traversing one floor
-  if (direction == DOWN || direction == STATIONARY) {
+  if (direction == DOWN || direction == RETURN) {
     digitalWrite(leds[current_floor--], LOW);
     digitalWrite(leds[current_floor], HIGH);
   } else if (direction == UP) {
