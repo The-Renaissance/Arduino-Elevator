@@ -15,16 +15,21 @@ static volatile int up_requests, down_requests;
 static int current_floor;
 
 void setup() {
+  noInterrupts();
   // Initialize LEDs and buttons
   for (uint8_t i = 0; i < FLOORS; ++i) {
     pinMode(leds[i], OUTPUT);
     pinMode(buttons[i], INPUT_PULLUP);
-    attachInterrupt(digitalPinToInterrupt(buttons[i]), button_handler, FALLING);
   }
 
+  // initialize interrupt registers
+  PCMSK0 = (1 << PCINT0) | (1 << PCINT1) | (1 << PCINT2) | (1 << PCINT3);
+  PCICR = (1 << PCIE0);
+  
   // In the beginning, the elevator is stationary and stays on the first floor
   digitalWrite(leds[0], HIGH);
   direction = RETURN;
+  interrupts();
 }
 
 void loop() {
@@ -58,7 +63,7 @@ void loop() {
   }
 }
 
-void button_handler() {
+ISR(PCINT0_vect) {
   for (int i = 0; i < FLOORS; ++i) {
     if (digitalRead(buttons[i]) == LOW) {
       if (current_floor < i) {
@@ -68,6 +73,7 @@ void button_handler() {
         ++down_requests;
         floor_requested[i] = true;
       }
+      break;
     }
   }
 }
