@@ -19,6 +19,7 @@ void setup() {
   for (uint8_t i = 0; i < FLOORS; ++i) {
     pinMode(leds[i], OUTPUT);
     pinMode(buttons[i], INPUT_PULLUP);
+    attachInterrupt(digitalPinToInterrupt(buttons[i]), button_handler, FALLING);
   }
 
   // In the beginning, the elevator is stationary and stays on the first floor
@@ -54,5 +55,19 @@ void loop() {
   } else if (direction == UP) {
     digitalWrite(leds[current_floor++], LOW);
     digitalWrite(leds[current_floor], HIGH);
+  }
+}
+
+void button_handler() {
+  for (int i = 0; i < FLOORS; ++i) {
+    if (digitalRead(buttons[i]) == LOW) {
+      if (current_floor < i) {
+        ++up_requests;
+        floor_requested[i] = true;
+      } else if (current_floor > i) {
+        ++down_requests;
+        floor_requested[i] = true;
+      }
+    }
   }
 }
