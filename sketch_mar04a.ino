@@ -23,7 +23,7 @@ void setup() {
 
   // In the beginning, the elevator is stationary and stays on the first floor
   digitalWrite(leds[0], HIGH);
-  state = STATIONARY;
+  direction = STATIONARY;
 }
 
 void loop() {
@@ -46,7 +46,7 @@ void loop() {
     delay(5000);
   }
   delay(1500); // simulated 1.5s delay for traversing one floor
-  if (direction == DOWN) {
+  if (direction == DOWN || direction == STATIONARY) {
     digitalWrite(leds[current_floor--], LOW);
     digitalWrite(leds[current_floor], HIGH);
   } else if (direction == UP) {
