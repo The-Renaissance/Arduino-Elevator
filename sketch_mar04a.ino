@@ -52,6 +52,7 @@ void loop() {
     if (direction == DOWN) --down_requests;
     else if (direction == UP) --up_requests;
     delay(5000);
+    return;
   }
   delay(1500); // simulated 1.5s delay for traversing one floor
   if (direction == DOWN || direction == RETURN) {
