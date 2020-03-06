@@ -67,12 +67,14 @@ void loop() {
 ISR(PCINT0_vect) {
   for (int i = 0; i < FLOORS; ++i) {
     if (digitalRead(buttons[i]) == LOW) {
-      if (current_floor < i) {
-        ++up_requests;
-        floor_requested[i] = true;
-      } else if (current_floor > i) {
-        ++down_requests;
-        floor_requested[i] = true;
+      if (floor_requested[i] == false) {
+          if (current_floor < i) {
+            ++up_requests;
+            floor_requested[i] = true;
+          } else if (current_floor > i) {
+            ++down_requests;
+            floor_requested[i] = true;
+          }
       }
       break;
     }
