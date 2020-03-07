@@ -64,6 +64,7 @@ void loop() {
   }
 }
 
+// This segment of code will be executed when a button is pressed.
 ISR(PCINT0_vect) {
   for (int i = 0; i < FLOORS; ++i) {
     if (digitalRead(buttons[i]) == LOW) {
